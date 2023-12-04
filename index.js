@@ -1,6 +1,26 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const generateLogo = require("./lib/shapes");
+const {Circle, Triangle, Square} = require("./lib/shapes")
+
+
+class Logo {
+    constructor() {
+        this.textEl = ''
+        this.shapeEl = ''
+    }
+    render() {
+        return `<svg version="1.1"
+     width="300" height="200"
+     xmlns="http://www.w3.org/2000/svg">`
+    }
+    setTextEl(letters, textColor) {
+        this.textEl = `<text x="150" y="125" font-size="60" text-anchor="middle" fill="${textColor}">${letters}</text>`
+    }
+    setShapeEl(shape) {
+        this.shapeEl = shape.render()
+    }
+};
+
 
 
 // GIVEN a command-line application that accepts user input
@@ -50,18 +70,41 @@ function writeToFile(fileName, data) {
     );
 }
 
+function generateLogo(data) {
+    let logoLetters = "";
+    if (data.letters.length > 0 && data.letters.length < 4) {
+        logoLetters = data.letters;
+    } else {
+        console.log("Please enter 1-3 letters.")
+    }
+
+    let logoShape = "";
+    if (data.shape === "Circle") {
+        logoShape === new Circle();
+    } else if (data.shape === "Triangle") {
+        logoShape === new Triangle();
+    } else if (data.shape === "Square") {
+        logoShape === new Square();
+        // } else {
+        //     console.log("Select a shape.")
+    }
+
+    let svg = new Logo();
+    svg.setShapeEl(logoShape);
+    svg.setTextEl(logoLetters, textColor);
+    svg.render()
+    
+}
 
 function init() {
     inquirer.prompt(questions)
-    .then(function (userInput) {
-        console.log(userInput),
-            writeToFile('logo.svg', generateLogo(userInput));
-    }
-    );
-
+        .then(function (userInput) {
+            console.log(userInput),
+                writeToFile('logo.svg', generateLogo(userInput));
+        }
+        );
 };
 
-// console.log(generateLogo(data))
 
 
 // WHEN I open the `logo.svg` file in a browser
