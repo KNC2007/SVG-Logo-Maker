@@ -11,7 +11,8 @@ class Logo {
     render() {
         return `<svg version="1.1"
      width="300" height="200"
-     xmlns="http://www.w3.org/2000/svg">`
+     xmlns="http://www.w3.org/2000/svg"
+     width="300" height="200">${this.shapeEl}${this.textEl}</svg>`
     }
     setTextEl(letters, textColor) {
         this.textEl = `<text x="150" y="125" font-size="60" text-anchor="middle" fill="${textColor}">${letters}</text>`
@@ -71,32 +72,29 @@ function writeToFile(fileName, data) {
 }
 
 function generateLogo(data) {
-    let logoLetters = "";
+    let logoLetters = '';
     if (data.letters.length > 0 && data.letters.length < 4) {
         logoLetters = data.letters;
     } else {
         console.log("Please enter 1-3 letters.")
     }
 
-    let logoShape = "";
+    let logoShape = '';
     if (data.shape === "Circle") {
         logoShape === new Circle();
     } else if (data.shape === "Triangle") {
         logoShape === new Triangle();
     } else if (data.shape === "Square") {
         logoShape === new Square();
-        // } else {
-        //     console.log("Select a shape.")
     }
-
     let svg = new Logo();
     svg.setShapeEl(logoShape);
     svg.setTextEl(logoLetters, textColor);
     svg.render()
     
-}
+};
 
-function init() {
+async function init() {
     inquirer.prompt(questions)
         .then(function (userInput) {
             console.log(userInput),
