@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const {Circle, Triangle, Square} = require("./lib/shapes")
+const {Circle, Triangle, Square} = require("./lib/shapes");
+const { writeFile } = require("fs/promises")
 
 
 class Logo {
@@ -18,7 +19,11 @@ class Logo {
         this.textEl = `<text x="150" y="125" font-size="60" text-anchor="middle" fill="${textColor}">${letters}</text>`
     }
     setShapeEl(shape) {
-        this.shapeEl = shape.render()
+        if (shape && typeof shape.render === 'function') {
+            this.shapeEl = shape.render();
+        } else {
+            console.error('Invalid shape object provided.');
+        }
     }
 };
 
@@ -65,13 +70,13 @@ const questions = [
 // WHEN I have entered input for all the prompts
 // THEN an SVG file is created named `logo.svg`
 // AND the output text "Generated logo.svg" is printed in the command line
-function writeToFile(fileName, data) {
-    fs.writeFile(fileName, data, (err) =>
-        err ? console.error(err) : console.log('Generated logo.svg')
-    );
-}
+// function writeToFile(fileName, data) {
+//     fs.writeFile(fileName, svg.render(), (err) =>
+//         err ? console.error(err) : console.log('Generated logo.svg')
+//     );
+// }
 
-function generateLogo(data) {
+async function generateLogo(data) {
     let logoLetters = '';
     if (data.letters.length > 0 && data.letters.length < 4) {
         logoLetters = data.letters;
@@ -81,24 +86,29 @@ function generateLogo(data) {
 
     let logoShape = '';
     if (data.shape === "Circle") {
-        logoShape === new Circle();
+        logoShape = new Circle();
     } else if (data.shape === "Triangle") {
-        logoShape === new Triangle();
+        logoShape = new Triangle();
     } else if (data.shape === "Square") {
-        logoShape === new Square();
+        logoShape = new Square();
     }
-    let svg = new Logo();
+    logoShape.setShapeColor(data.shapeColor);
+
+    console.log(logoShape);
+    console.log(logoLetters);
+
+    const svg = new Logo();
     svg.setShapeEl(logoShape);
-    svg.setTextEl(logoLetters, textColor);
-    svg.render()
-    
+    svg.setTextEl(logoLetters, data.textColor);
+    return writeFile("logo.svg", svg.render())
 };
 
 async function init() {
     inquirer.prompt(questions)
         .then(function (userInput) {
-            console.log(userInput),
-                writeToFile('logo.svg', generateLogo(userInput));
+            console.log(userInput)
+            generateLogo(userInput)
+                // writeToFile('logo.svg', generateLogo(userInput));
         }
         );
 };
