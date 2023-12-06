@@ -94,21 +94,22 @@ async function generateLogo(data) {
     }
     logoShape.setShapeColor(data.shapeColor);
 
-    console.log(logoShape);
-    console.log(logoLetters);
+    // console.log(logoShape);
+    // console.log(logoLetters);
 
     const svg = new Logo();
     svg.setShapeEl(logoShape);
     svg.setTextEl(logoLetters, data.textColor);
     return writeFile("logo.svg", svg.render())
+    
 };
 
 async function init() {
     inquirer.prompt(questions)
         .then(function (userInput) {
-            console.log(userInput)
+            // console.log(userInput)
             generateLogo(userInput)
-                // writeToFile('logo.svg', generateLogo(userInput));
+            console.log('Generated logo.svg')
         }
         );
 };
